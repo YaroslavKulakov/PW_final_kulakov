@@ -15,6 +15,7 @@ export class AccountPage {
   }
 
   async expectUserLoggedIn(name: string) {
+    await this.usernameLabel.waitFor({ state: 'visible' });
     await expect(this.usernameLabel).toHaveText(name);
   }
 }
