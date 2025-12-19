@@ -11,8 +11,8 @@ export class AccountPage {
   }
 
   async expectUserLoggedIn(name: string) {
-    const userElement = this.page.getByRole('button', { name });
-    await expect(userElement).toBeVisible();
+    const userElement = this.page.locator('[data-test="nav-menu"]');
+  await expect(userElement).toContainText(name);
 
   }
 }
