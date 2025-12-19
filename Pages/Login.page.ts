@@ -13,9 +13,9 @@ export class LoginPage {
     this.page = page;
     this.header = new HeaderFragment(page);
 
-    this.emailField = page.locator('[data-test="email"]');
-    this.passwordField = page.locator('[data-test="password"]');
-    this.submitButton = page.locator('[data-test="login-submit"]');
+    this.emailField = page.getByTestId('email');
+    this.passwordField = page.getByTestId('password');
+    this.submitButton = page.getByTestId('login-submit');
   }
 
   async performLogin(email: string, password: string) {

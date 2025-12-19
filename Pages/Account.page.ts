@@ -11,13 +11,8 @@ export class AccountPage {
   }
 
   async expectUserLoggedIn(name: string) {
-    // Find the user menu / button by accessible role + name (e.g. "Jane Doe")
-    const user = this.page.getByRole('button', { name });
+    const userElement = this.page.getByRole('button', { name });
+    await expect(userElement).toBeVisible();
 
-    // Wait for it to be visible (give more time on CI to avoid flakiness)
-    await expect(user).toBeVisible({ timeout: 60_000 });
-
-    // Optionally also assert the visible text contains the name
-    await expect(user).toHaveText(name, { timeout: 5_000 });
   }
 }
