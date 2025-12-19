@@ -1,21 +1,23 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, expect } from '@playwright/test';
 import { HeaderFragment } from './header.fragment';
 
 export class AccountPage {
   page: Page;
   header: HeaderFragment;
 
-  usernameLabel: Locator;
-
   constructor(page: Page) {
     this.page = page;
     this.header = new HeaderFragment(page);
-
-    this.usernameLabel = page.locator('[data-test="nav-menu"]');
   }
 
   async expectUserLoggedIn(name: string) {
-    const userLabel = this.page.getByText(name, { exact: false });
-    await expect(userLabel).toBeVisible();
+    // Find the user menu / button by accessible role + name (e.g. "Jane Doe")
+    const user = this.page.getByRole('button', { name });
+
+    // Wait for it to be visible (give more time on CI to avoid flakiness)
+    await expect(user).toBeVisible({ timeout: 60_000 });
+
+    // Optionally also assert the visible text contains the name
+    await expect(user).toHaveText(name, { timeout: 5_000 });
   }
 }
