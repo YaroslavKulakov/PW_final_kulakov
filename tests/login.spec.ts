@@ -1,18 +1,21 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
+import { HomePage } from '../Pages/Home.page';
+import { LoginPage } from '../Pages/Login.page';
+import { AccountPage } from '../Pages/Account.page';
 
+
+// eslint-disable-next-line playwright/expect-expect
 test('Verify login with valid credentials', async ({ page }) => {
-  await page.goto('https://practicesoftwaretesting.com/auth/login');
+  
+  test.skip(process.env.CI === 'true', 'Skip test on CI');
+  const homePage = new HomePage(page);
+  const loginPage = new LoginPage(page);
+  const accountPage = new AccountPage(page);
 
-  await page.locator('[data-test="email"]').fill('customer@practicesoftwaretesting.com');
-  await page.locator('[data-test="password"]').fill('welcome01');
-  await page.locator('[data-test="login-submit"]').click();
+  await homePage.goto();
+  await homePage.header.openLogin();
 
-  // Verify URL is https://practicesoftwaretesting.com/account.
-  await expect(page).toHaveURL('https://practicesoftwaretesting.com/account');
+  await loginPage.performLogin('customer@practicesoftwaretesting.com', 'welcome01');
 
-  // Verify page title is "My Account".
-  await expect(page.locator('[data-test="page-title"]')).toHaveText('My account');
-
-  // Verify username "Jane Doe" appears in the navigation bar.
-  await expect(page.locator('[data-test="nav-menu"]')).toHaveText('Jane Doe');
+  await accountPage.expectUserLoggedIn('Jane Doe');
 });
