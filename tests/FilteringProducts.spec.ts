@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 
+const authFile = 'playwright/.auth/user.json';
+test.use({ storageState: authFile });
 
-   //Створення Category enums
-
-
+//Створення Category enums
 // Hand Tools
 export enum HandToolsCategory {
   HAMMER = 'Hammer',

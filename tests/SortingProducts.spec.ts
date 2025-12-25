@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test';
 
+const authFile = 'playwright/.auth/user.json';
+test.use({ storageState: authFile });
+
 // Сортування продуктів за імʼям (asc & desc)
 test.describe('Verify user can perform sorting by name (asc & desc)', () => {
   // Створюю набір параметрів для сортування за імʼям
