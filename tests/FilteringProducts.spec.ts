@@ -1,9 +1,9 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
+import { HomePage } from '../Pages/Home.page';
 
 const authFile = 'playwright/.auth/user.json';
 test.use({ storageState: authFile });
 
-//Створення Category enums
 // Hand Tools
 export enum HandToolsCategory {
   HAMMER = 'Hammer',
@@ -32,27 +32,13 @@ export enum OtherCategory {
   FASTENERS = 'Fasteners',
 }
 
-
-// Тест: Фільтрація продуктів за категорією
 test.describe('Verify user can filter products by category', () => {
+  // eslint-disable-next-line playwright/expect-expect
   test('Verify user can filter products by category: Sander', async ({ page }) => {
-    // Open homepage (через baseURL)
-    await page.goto('/');
+    const homePage = new HomePage(page);
 
-    // вибираємо категорію "Sander" in Power Tools category
-    await page.getByLabel(PowerToolsCategory.SANDER).check();
-
-    const productNames = page.locator('[data-test="product-name"]');
-
-    // чекаємо перший продукт з назвою, що містить "Sander", щоб переконатися, що фільтр застосовано
-    await expect(productNames.filter({ hasText: 'Sander' }).first()).toBeVisible();
-
-    // Отримуємо всі назви продуктів, що відображаються після фільтрації
-    const productNamesText = await productNames.allInnerTexts();
-
-    // Перевіряємо, що всі назви продуктів містять "Sander"
-    for (const name of productNamesText) {
-      expect(name).toContain('Sander');
-    }
+    await homePage.goto();
+    await homePage.filterByCategory(PowerToolsCategory.SANDER);
+    await homePage.expectAllProductNamesContain(PowerToolsCategory.SANDER);
   });
 });

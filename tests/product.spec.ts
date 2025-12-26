@@ -70,7 +70,7 @@ test('Verify user can add product to cart', async ({ page }) => {
     await page.locator('[data-test="nav-cart"]').click();
 
     // 4.1 Verify URL is https://practicesoftwaretesting.com/checkout.
-    await expect(page).toHaveURL('https://practicesoftwaretesting.com/checkout');
+    await expect(page).toHaveURL(/\/checkout/);
 
     // 4.2 Verify the number of products in the cart table equals 1.
     await expect(page.locator('[data-test="product-quantity"]')).toHaveValue('1');

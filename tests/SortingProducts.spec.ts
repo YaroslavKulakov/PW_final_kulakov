@@ -1,80 +1,56 @@
 import { test, expect } from '@playwright/test';
+import { HomePage } from '../Pages/Home.page';
+import { getSortedNumbers, getSortedStrings, type SortDirection } from './utils/sort';
 
 const authFile = 'playwright/.auth/user.json';
 test.use({ storageState: authFile });
 
-// Сортування продуктів за імʼям (asc & desc)
-test.describe('Verify user can perform sorting by name (asc & desc)', () => {
-  // Створюю набір параметрів для сортування за імʼям
-  const sortOptions = [
-    { label: 'Name (A - Z)', direction: 'asc' as const },
-    { label: 'Name (Z - A)', direction: 'desc' as const },
-  ];
+test.describe('Sorting products', () => {
+  test.describe('Verify user can perform sorting by name (asc & desc)', () => {
+    const sortOptions: ReadonlyArray<{ label: string; direction: SortDirection }> = [
+      { label: 'Name (A - Z)', direction: 'asc' },
+      { label: 'Name (Z - A)', direction: 'desc' },
+    ];
 
-  for (const { label, direction } of sortOptions) {
-    test(`Verify user can sort products by ${label}`, async ({ page }) => {
-      // 1. Open homepage (через baseURL)
-      await page.goto('/');
+    for (const { label, direction } of sortOptions) {
+      test(`Verify user can sort products by ${label}`, async ({ page }) => {
+        const homePage = new HomePage(page);
 
-      // 2. Обрати сортування
-      await page.locator('[data-test="sort"]').selectOption({ label });
+        await homePage.goto();
+        await homePage.selectSortOption(label);
 
-      const productNameLocator = page.locator('[data-test="product-name"]');
+        const actualNames = await homePage.getProductNames();
+        const expectedNames = getSortedStrings(actualNames, direction);
 
-      // 3. Дочекатися, поки хоч один продукт зʼявиться
-      await expect(productNameLocator.first()).toBeVisible();
+        // також нормалізуємо actual, бо expected вже нормалізований
+        const normalizedActual = actualNames
+          .map(s => s.replace(/\s+/g, ' ').trim())
+          .filter(Boolean);
 
-      // 4. Зібрати всі назви
-      const productNames = await productNameLocator.allInnerTexts();
+        expect(normalizedActual).toEqual(expectedNames);
+      });
+    }
+  });
 
-      // 5. Побудувати очікуваний відсортований масив
-      const expected = [...productNames].sort((a, b) => a.localeCompare(b));
-      if (direction === 'desc') {
-        expected.reverse();
-      }
+  test.describe('Verify user can perform sorting by price (asc & desc)', () => {
+    const sortOptions: ReadonlyArray<{ label: string; direction: SortDirection }> = [
+      { label: 'Price (Low - High)', direction: 'asc' },
+      { label: 'Price (High - Low)', direction: 'desc' },
+    ];
 
-      // 6. Порівняти фактичний порядок з очікуваним
-      expect(productNames).toEqual(expected);
-    });
-  }
-});
+    for (const { label, direction } of sortOptions) {
+      test(`Verify user can sort products by ${label}`, async ({ page }) => {
+        const homePage = new HomePage(page);
 
+        await homePage.goto();
+        await homePage.selectSortOption(label);
 
-// Сортування продуктів за ціною (asc & desc)
-test.describe('Verify user can perform sorting by price (asc & desc)', () => {
-  // Набір параметрів для сортування за ціною
-  const sortOptions = [
-    { label: 'Price (Low - High)', direction: 'asc' as const },
-    { label: 'Price (High - Low)', direction: 'desc' as const },
-  ];
+        const actualPrices = await homePage.getProductPrices();
 
-  // Парсинг ціни "$9.17" → 9.17
-  const parsePrice = (t: string) => Number(t.replace(/[^0-9.]/g, ''));
+        const expectedPrices = getSortedNumbers(actualPrices, direction);
 
-  for (const { label, direction } of sortOptions) {
-    test(`Verify user can sort products by ${label}`, async ({ page }) => {
-      // 1. Open homepage (через baseURL)
-      await page.goto('/');
-
-      // 2. Обрати сортування
-      await page.locator('[data-test="sort"]').selectOption({ label });
-
-      // 3. Почекати, поки хоч одна ціна зʼявиться
-      const priceLocator = page.locator('[data-test="product-price"]');
-      await expect(priceLocator.first()).toBeVisible();
-
-      // 4. Зібрати всі ціни
-      const priceTexts = await priceLocator.allInnerTexts();
-      const prices = priceTexts.map(parsePrice);
-
-      // 5. Побудувати очікуваний відсортований масив
-      const expected = [...prices].sort((a, b) => a - b);
-      if (direction === 'desc') {
-        expected.reverse();
-      }
-
-      // 6. Порівняти фактичний порядок з очікуваним
-      expect(prices).toEqual(expected);
-    });
-  }
+        expect(actualPrices).toEqual(expectedPrices);
+      });
+    }
+  });
 });

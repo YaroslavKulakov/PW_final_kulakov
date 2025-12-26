@@ -29,6 +29,7 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('')`. */
     baseURL: 'https://practicesoftwaretesting.com',
     testIdAttribute: 'data-test',
+    viewport: { width: 1440, height: 900 },
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
