@@ -1,5 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const authFile = 'playwright/.auth/user.json';
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -28,6 +29,7 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('')`. */
     baseURL: 'https://practicesoftwaretesting.com',
     testIdAttribute: 'data-test',
+    viewport: { width: 1440, height: 900 },
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -35,19 +37,35 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    
+    // Проєкт для аутентифікації
+    {
+      name: 'auth',
+      testMatch: /auth\.login\.spec\.ts/,
+    },
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: authFile, 
+      },
+      dependencies: ['auth'],
     },
-
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        storageState: authFile,
+      },
+      dependencies: ['auth'],
     },
-
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      use: {
+        ...devices['Desktop Safari'],
+        storageState: authFile,
+      },
+      dependencies: ['auth'],
     },
 
     /* Test against mobile viewports. */
