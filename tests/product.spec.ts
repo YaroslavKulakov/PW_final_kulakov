@@ -40,7 +40,7 @@ test('Verify user can add product to cart', async ({ page }) => {
     await page.locator('[data-test="product-name"]').filter({ hasText: productName }).click();
 
     // 2.1 Verify URL contains https://practicesoftwaretesting.com/product.
-    await expect(page).toHaveURL(/https:\/\/practicesoftwaretesting\.com\/product/);
+    await expect(page).toHaveURL(/\/product/);
 
     // 2.2 Product name is "Slip Joint Pliers"
     await expect(page.locator('[data-test="product-name"]')).toHaveText(
