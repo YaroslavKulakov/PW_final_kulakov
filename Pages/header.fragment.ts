@@ -1,42 +1,46 @@
-import { Page, Locator } from '@playwright/test';
+import {Locator, Page } from '@playwright/test';
 
 export class HeaderFragment {
-  page: Page;
+  readonly page: Page;
 
-  homeLink: Locator;
-  categoriesLink: Locator;
-  contactLink: Locator;
-  signInLink: Locator;
-  languageDropdown: Locator;
+  readonly homeLink: Locator;
+  readonly categoriesLink: Locator;
+  readonly contactLink: Locator;
+  readonly signInLink: Locator;
+  readonly languageDropdown: Locator;
 
   constructor(page: Page) {
     this.page = page;
 
-    this.homeLink = page.locator('[data-test="nav-home"]');
-    this.categoriesLink = page.locator('[data-test="nav-categories"]');
-    this.contactLink = page.locator('[data-test="nav-contact"]');
-    this.signInLink = page.locator('[data-test="nav-sign-in"]');
-    this.languageDropdown = page.locator('[data-test="language-select"]');
+    // testIdAttribute = 'data-test'
+    this.homeLink = page.getByTestId('nav-home');
+    this.categoriesLink = page.getByTestId('nav-categories');
+    this.contactLink = page.getByTestId('nav-contact');
+    this.signInLink = page.locator('[data-test="nav-sign-in"] a, a[data-test="nav-sign-in"]');
+    this.languageDropdown = page.getByTestId('language-select');
   }
 
-  async openHome() {
-    await this.homeLink.click();
+private async click(locator: Locator): Promise<void> {
+    await locator.click();
   }
 
-  async openCategories() {
-    await this.categoriesLink.click();
+  async openHome(): Promise<void> {
+    await this.click(this.homeLink);
   }
 
-  async openContact() {
-    await this.contactLink.click();
+  async openCategories(): Promise<void> {
+    await this.click(this.categoriesLink);
   }
 
-  async openLogin() {
-    await this.signInLink.click();
+  async openContact(): Promise<void> {
+    await this.click(this.contactLink);
   }
 
-  async openLanguageMenu() {
-    await this.languageDropdown.click();
+  async openLogin(): Promise<void> {
+    await this.click(this.signInLink);
+  }
+
+  async openLanguageMenu(): Promise<void> {
+    await this.click(this.languageDropdown);
   }
 }
-

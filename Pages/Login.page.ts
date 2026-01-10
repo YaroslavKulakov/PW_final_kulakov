@@ -19,8 +19,11 @@ export class LoginPage {
   }
 
   async performLogin(email: string, password: string) {
+    await this.emailField.waitFor({ state: 'visible', timeout: 10000 });
     await this.emailField.fill(email);
+    await this.passwordField.waitFor({ state: 'visible', timeout: 10000 });
     await this.passwordField.fill(password);
+    await this.submitButton.waitFor({ state: 'visible', timeout: 10000 });
     await this.submitButton.click();
   }
 }

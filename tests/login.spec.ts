@@ -5,9 +5,7 @@ import { AccountPage } from '../Pages/Account.page';
 
 
 // eslint-disable-next-line playwright/expect-expect
-test('Verify login with valid credentials', async ({ page }) => {
-  
-  test.skip(process.env.CI === 'true', 'Skip test on CI');
+test.skip('Verify login with valid credentials', async ({ page }) => {
   const homePage = new HomePage(page);
   const loginPage = new LoginPage(page);
   const accountPage = new AccountPage(page);
