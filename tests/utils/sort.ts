@@ -1,23 +1,41 @@
 export type SortDirection = 'asc' | 'desc';
 
-export function normalizeText(s: string): string {
-  return s.replace(/\s+/g, ' ').trim();
-}
+// ---------- SORT ----------
 
-export function getSortedStrings(items: string[], direction: SortDirection): string[] {
-  const normalized = items
-    .map(normalizeText)
-    .filter(Boolean);
-
-  const sorted = [...normalized].sort((a, b) =>
-    a.localeCompare(b, 'en', { sensitivity: 'base' })
+export function getSortedNumbers(values: number[], direction: SortDirection): number[] {
+  return [...values].sort((a, b) =>
+    direction === 'asc' ? a - b : b - a
   );
-
-  return direction === 'desc' ? sorted.reverse() : sorted;
 }
 
-export function getSortedNumbers(items: number[], direction: SortDirection): number[] {
-  const sorted = [...items].sort((a, b) => a - b);
-  return direction === 'desc' ? sorted.reverse() : sorted;
+export function getSortedStrings(values: string[], direction: SortDirection): string[] {
+  const normalized = values.map(v => v.replace(/\s+/g, ' ').trim());
+
+  return [...normalized].sort((a, b) =>
+    direction === 'asc'
+      ? a.localeCompare(b)
+      : b.localeCompare(a)
+  );
 }
+
+// ---------- CHECK ----------
+
+export function isSortedNumbers(values: number[], direction: SortDirection): boolean {
+  for (let i = 1; i < values.length; i++) {
+    if (direction === 'asc' && values[i] < values[i - 1]) return false;
+    if (direction === 'desc' && values[i] > values[i - 1]) return false;
+  }
+  return true;
+}
+
+export function isSortedStrings(values: string[], direction: SortDirection): boolean {
+  const normalized = values.map(v => v.replace(/\s+/g, ' ').trim());
+
+  for (let i = 1; i < normalized.length; i++) {
+    if (direction === 'asc' && normalized[i].localeCompare(normalized[i - 1]) < 0) return false;
+    if (direction === 'desc' && normalized[i].localeCompare(normalized[i - 1]) > 0) return false;
+  }
+  return true;
+}
+
 

@@ -1,9 +1,11 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../Pages/Home.page';
-import { getSortedNumbers, getSortedStrings, type SortDirection } from './utils/sort';
-
-const authFile = 'playwright/.auth/user.json';
-test.use({ storageState: authFile });
+import { test, expect } from './fixtures';
+import {
+  getSortedNumbers,
+  getSortedStrings,
+  isSortedNumbers,
+  isSortedStrings,
+  type SortDirection,
+} from './utils/sort';
 
 test.describe('Sorting products', () => {
   test.describe('Verify user can perform sorting by name (asc & desc)', () => {
@@ -13,16 +15,21 @@ test.describe('Sorting products', () => {
     ];
 
     for (const { label, direction } of sortOptions) {
-      test(`Verify user can sort products by ${label}`, async ({ page }) => {
-        const homePage = new HomePage(page);
+      test(`Verify user can sort products by ${label}`, async ({ app }) => {
+        await app.homePage.goto();
+        await app.homePage.selectSortOption(label);
 
-        await homePage.goto();
-        await homePage.selectSortOption(label);
+        // Wait until names are sorted as expected
+        await expect
+          .poll(async () => {
+            const names = await app.homePage.getProductNames();
+            return isSortedStrings(names, direction);
+          }, { timeout: 5000 })
+          .toBe(true);
 
-        const actualNames = await homePage.getProductNames();
+        const actualNames = await app.homePage.getProductNames();
         const expectedNames = getSortedStrings(actualNames, direction);
 
-        // також нормалізуємо actual, бо expected вже нормалізований
         const normalizedActual = actualNames
           .map(s => s.replace(/\s+/g, ' ').trim())
           .filter(Boolean);
@@ -39,14 +46,19 @@ test.describe('Sorting products', () => {
     ];
 
     for (const { label, direction } of sortOptions) {
-      test(`Verify user can sort products by ${label}`, async ({ page }) => {
-        const homePage = new HomePage(page);
+      test(`Verify user can sort products by ${label}`, async ({ app }) => {
+        await app.homePage.goto();
+        await app.homePage.selectSortOption(label);
 
-        await homePage.goto();
-        await homePage.selectSortOption(label);
+        // Wait until prices are sorted as expected
+        await expect
+          .poll(async () => {
+            const prices = await app.homePage.getProductPrices();
+            return isSortedNumbers(prices, direction);
+          }, { timeout: 5000 })
+          .toBe(true);
 
-        const actualPrices = await homePage.getProductPrices();
-
+        const actualPrices = await app.homePage.getProductPrices();
         const expectedPrices = getSortedNumbers(actualPrices, direction);
 
         expect(actualPrices).toEqual(expectedPrices);
