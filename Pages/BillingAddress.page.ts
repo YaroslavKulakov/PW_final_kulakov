@@ -1,58 +1,42 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
+import { AddressData, defaultAddress } from '../tests/utils/address';
 
 export class BillingAddressPage {
   readonly page: Page;
 
-  readonly streetInput: Locator;
-  readonly cityInput: Locator;
-  readonly stateInput: Locator;
-  readonly countryInput: Locator;
-  readonly postalCodeInput: Locator;
+  readonly street: Locator;
+  readonly city: Locator;
+  readonly state: Locator;
+  readonly country: Locator;
+  readonly postalCode: Locator;
   readonly proceedButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
 
-    // testIdAttribute = "data-test"
-    this.streetInput = page.getByTestId('street');
-    this.cityInput = page.getByTestId('city');
-    this.stateInput = page.getByTestId('state');
-    this.countryInput = page.getByTestId('country');
-    this.postalCodeInput = page.getByTestId('postal_code');
-
-    // кнопка Continue / Proceed
+    this.street = page.getByTestId('street');
+    this.city = page.getByTestId('city');
+    this.state = page.getByTestId('state');
+    this.country = page.getByTestId('country');
+    this.postalCode = page.getByTestId('postal_code');
     this.proceedButton = page.getByTestId('proceed-3');
   }
 
-  async expectOpened(): Promise<void> {
-    await expect(this.streetInput).toBeVisible();
+  async expectOpened() {
     await expect(this.proceedButton).toBeVisible();
   }
 
-  async fillMissingFields(): Promise<void> {
-    // заповнюємо тільки якщо пусті 
-    if (await this.streetInput.inputValue() === '') {
-      await this.streetInput.fill('Main Street 123');
-    }
-
-    if (await this.cityInput.inputValue() === '') {
-      await this.cityInput.fill('Kyiv');
-    }
-
-    if (await this.stateInput.inputValue() === '') {
-      await this.stateInput.fill('Kyiv');
-    }
-
-    if (await this.countryInput.inputValue() === '') {
-      await this.countryInput.fill('Ukraine');
-    }
-
-    if (await this.postalCodeInput.inputValue() === '') {
-      await this.postalCodeInput.fill('01001');
-    }
+  async fillMissingFields(
+    data: AddressData = defaultAddress
+  ): Promise<void> {
+    await this.street.fill(data.street);
+    await this.city.fill(data.city);
+    await this.state.fill(data.state);
+    await this.country.fill(data.country);
+    await this.postalCode.fill(data.postalCode);
   }
 
-  async proceed(): Promise<void> {
+  async proceed() {
     await this.proceedButton.click();
   }
 }

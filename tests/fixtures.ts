@@ -1,6 +1,7 @@
 import { test as base, expect, BrowserContext } from '@playwright/test';
 import path from 'path';
 import { App } from '../Pages/App';
+import { testUser } from './utils/testUser';
 
 const authFile = path.resolve(__dirname, '../playwright/.auth/user.json');
 
@@ -26,7 +27,7 @@ export const test = base.extend<Fixtures>({
 
     // перевірка, що справді залогінений
     await page.goto('/');
-    await expect(page.getByText('Jane Doe')).toBeVisible();
+await expect(page.getByText(testUser.fullName)).toBeVisible();
 
     await use(app);
 

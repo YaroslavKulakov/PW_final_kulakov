@@ -1,5 +1,6 @@
 import { test } from './fixtures';
 
+// Skipped: replaced by storageState auth (see auth.setup.ts)
 // eslint-disable-next-line playwright/expect-expect
 test.skip('Verify login with valid credentials', async ({ app }) => {
   await app.homePage.goto();

@@ -10,6 +10,10 @@ export class HomePage {
   readonly productNames: Locator;
   readonly productPrices: Locator;
 
+  // first product helpers
+  readonly firstProductName: Locator;
+  readonly firstProductPrice: Locator;
+
   constructor(page: Page) {
     this.page = page;
     this.header = new HeaderFragment(page);
@@ -17,10 +21,32 @@ export class HomePage {
     this.sortDropdown = page.getByTestId('sort');
     this.productNames = page.getByTestId('product-name');
     this.productPrices = page.getByTestId('product-price');
+
+    // first item
+    this.firstProductName = this.productNames.first();
+    this.firstProductPrice = this.productPrices.first();
   }
 
   async goto() {
     await this.page.goto('/');
+  }
+
+  // read first product data 
+  async getFirstProductName(): Promise<string> {
+    await expect(this.firstProductName).toBeVisible();
+    return (await this.firstProductName.innerText()).trim();
+  }
+
+  // open PDP by clicking first product name
+  async openFirstProduct(): Promise<void> {
+    await expect(this.firstProductName).toBeVisible();
+    await this.firstProductName.click();
+  }
+
+  async getFirstProductPriceText(): Promise<string> {
+    const el = this.productPrices.first();
+    await expect(el).toBeVisible();
+    return (await el.innerText()).trim();
   }
 
   async openProductByName(name: string): Promise<void> {

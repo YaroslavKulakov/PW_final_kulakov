@@ -2,8 +2,6 @@ import { test, expect } from './fixtures';
 import {
   getSortedNumbers,
   getSortedStrings,
-  isSortedNumbers,
-  isSortedStrings,
   type SortDirection,
 } from './utils/sort';
 
@@ -19,22 +17,21 @@ test.describe('Sorting products', () => {
         await app.homePage.goto();
         await app.homePage.selectSortOption(label);
 
-        // Wait until names are sorted as expected
         await expect
           .poll(async () => {
-            const names = await app.homePage.getProductNames();
-            return isSortedStrings(names, direction);
+            const actualNames = await app.homePage.getProductNames();
+            const expectedNames = getSortedStrings(actualNames, direction);
+            return { actualNames, expectedNames };
           }, { timeout: 5000 })
-          .toBe(true);
+          .toEqual(expect.objectContaining({
+            actualNames: expect.any(Array),
+            expectedNames: expect.any(Array),
+          }));
 
         const actualNames = await app.homePage.getProductNames();
         const expectedNames = getSortedStrings(actualNames, direction);
 
-        const normalizedActual = actualNames
-          .map(s => s.replace(/\s+/g, ' ').trim())
-          .filter(Boolean);
-
-        expect(normalizedActual).toEqual(expectedNames);
+        expect(actualNames).toEqual(expectedNames);
       });
     }
   });
@@ -50,13 +47,16 @@ test.describe('Sorting products', () => {
         await app.homePage.goto();
         await app.homePage.selectSortOption(label);
 
-        // Wait until prices are sorted as expected
         await expect
           .poll(async () => {
-            const prices = await app.homePage.getProductPrices();
-            return isSortedNumbers(prices, direction);
+            const actualPrices = await app.homePage.getProductPrices();
+            const expectedPrices = getSortedNumbers(actualPrices, direction);
+            return { actualPrices, expectedPrices };
           }, { timeout: 5000 })
-          .toBe(true);
+          .toEqual(expect.objectContaining({
+            actualPrices: expect.any(Array),
+            expectedPrices: expect.any(Array),
+          }));
 
         const actualPrices = await app.homePage.getProductPrices();
         const expectedPrices = getSortedNumbers(actualPrices, direction);

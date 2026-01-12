@@ -6,6 +6,5 @@ export const parsePrice = (text: string): number => {
     throw new Error(`Cannot parse price from "${text}"`);
   }
 
-  // convert to cents to avoid floating point issues
-  return Math.round(value * 100);
+  return Math.round(value * 100) / 100;
 };
