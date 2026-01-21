@@ -1,19 +1,12 @@
-import { test } from '@playwright/test';
-import { HomePage } from '../Pages/Home.page';
-import { LoginPage } from '../Pages/Login.page';
-import { AccountPage } from '../Pages/Account.page';
+import { test } from './fixtures';
 
-
+// Skipped: replaced by storageState auth (see auth.setup.ts)
 // eslint-disable-next-line playwright/expect-expect
-test.skip('Verify login with valid credentials', async ({ page }) => {
-  const homePage = new HomePage(page);
-  const loginPage = new LoginPage(page);
-  const accountPage = new AccountPage(page);
+test.skip('Verify login with valid credentials', async ({ app }) => {
+  await app.homePage.goto();
+  await app.homePage.header.openLogin();
 
-  await homePage.goto();
-  await homePage.header.openLogin();
+  await app.loginPage.performLogin('customer@practicesoftwaretesting.com', 'welcome01');
 
-  await loginPage.performLogin('customer@practicesoftwaretesting.com', 'welcome01');
-
-  await accountPage.expectUserLoggedIn('Jane Doe');
+  await app.accountPage.expectUserLoggedIn('Jane Doe');
 });

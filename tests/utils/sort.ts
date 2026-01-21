@@ -1,23 +1,24 @@
 export type SortDirection = 'asc' | 'desc';
 
-export function normalizeText(s: string): string {
-  return s.replace(/\s+/g, ' ').trim();
-}
+// ---------- NUMBERS ----------
 
-export function getSortedStrings(items: string[], direction: SortDirection): string[] {
-  const normalized = items
-    .map(normalizeText)
-    .filter(Boolean);
-
-  const sorted = [...normalized].sort((a, b) =>
-    a.localeCompare(b, 'en', { sensitivity: 'base' })
+export function getSortedNumbers(values: number[], direction: SortDirection): number[] {
+  return [...values].sort((a, b) =>
+    direction === 'asc' ? a - b : b - a
   );
-
-  return direction === 'desc' ? sorted.reverse() : sorted;
 }
 
-export function getSortedNumbers(items: number[], direction: SortDirection): number[] {
-  const sorted = [...items].sort((a, b) => a - b);
-  return direction === 'desc' ? sorted.reverse() : sorted;
-}
+// ---------- STRINGS ----------
 
+export function getSortedStrings(values: string[], direction: SortDirection): string[] {
+  const normalize = (v: string) => v.replace(/\s+/g, ' ').trim();
+
+  return [...values].sort((a, b) => {
+    const aNorm = normalize(a);
+    const bNorm = normalize(b);
+
+    return direction === 'asc'
+      ? aNorm.localeCompare(bNorm)
+      : bNorm.localeCompare(aNorm);
+  });
+}

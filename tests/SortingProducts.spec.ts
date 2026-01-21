@@ -1,9 +1,9 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../Pages/Home.page';
-import { getSortedNumbers, getSortedStrings, type SortDirection } from './utils/sort';
-
-const authFile = 'playwright/.auth/user.json';
-test.use({ storageState: authFile });
+import { test, expect } from './fixtures';
+import {
+  getSortedNumbers,
+  getSortedStrings,
+  type SortDirection,
+} from './utils/sort';
 
 test.describe('Sorting products', () => {
   test.describe('Verify user can perform sorting by name (asc & desc)', () => {
@@ -13,21 +13,25 @@ test.describe('Sorting products', () => {
     ];
 
     for (const { label, direction } of sortOptions) {
-      test(`Verify user can sort products by ${label}`, async ({ page }) => {
-        const homePage = new HomePage(page);
+      test(`Verify user can sort products by ${label}`, async ({ app }) => {
+        await app.homePage.goto();
+        await app.homePage.selectSortOption(label);
 
-        await homePage.goto();
-        await homePage.selectSortOption(label);
+        await expect
+          .poll(async () => {
+            const actualNames = await app.homePage.getProductNames();
+            const expectedNames = getSortedStrings(actualNames, direction);
+            return { actualNames, expectedNames };
+          }, { timeout: 5000 })
+          .toEqual(expect.objectContaining({
+            actualNames: expect.any(Array),
+            expectedNames: expect.any(Array),
+          }));
 
-        const actualNames = await homePage.getProductNames();
+        const actualNames = await app.homePage.getProductNames();
         const expectedNames = getSortedStrings(actualNames, direction);
 
-        // також нормалізуємо actual, бо expected вже нормалізований
-        const normalizedActual = actualNames
-          .map(s => s.replace(/\s+/g, ' ').trim())
-          .filter(Boolean);
-
-        expect(normalizedActual).toEqual(expectedNames);
+        expect(actualNames).toEqual(expectedNames);
       });
     }
   });
@@ -39,14 +43,22 @@ test.describe('Sorting products', () => {
     ];
 
     for (const { label, direction } of sortOptions) {
-      test(`Verify user can sort products by ${label}`, async ({ page }) => {
-        const homePage = new HomePage(page);
+      test(`Verify user can sort products by ${label}`, async ({ app }) => {
+        await app.homePage.goto();
+        await app.homePage.selectSortOption(label);
 
-        await homePage.goto();
-        await homePage.selectSortOption(label);
+        await expect
+          .poll(async () => {
+            const actualPrices = await app.homePage.getProductPrices();
+            const expectedPrices = getSortedNumbers(actualPrices, direction);
+            return { actualPrices, expectedPrices };
+          }, { timeout: 5000 })
+          .toEqual(expect.objectContaining({
+            actualPrices: expect.any(Array),
+            expectedPrices: expect.any(Array),
+          }));
 
-        const actualPrices = await homePage.getProductPrices();
-
+        const actualPrices = await app.homePage.getProductPrices();
         const expectedPrices = getSortedNumbers(actualPrices, direction);
 
         expect(actualPrices).toEqual(expectedPrices);

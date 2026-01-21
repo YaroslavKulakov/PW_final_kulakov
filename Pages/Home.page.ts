@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 import { HeaderFragment } from './header.fragment';
 import { parsePrice } from '../tests/utils/price';
 
@@ -6,23 +6,55 @@ export class HomePage {
   readonly page: Page;
   readonly header: HeaderFragment;
 
-  // Locators
   readonly sortDropdown: Locator;
   readonly productNames: Locator;
   readonly productPrices: Locator;
+
+  // first product helpers
+  readonly firstProductName: Locator;
+  readonly firstProductPrice: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.header = new HeaderFragment(page);
 
-    this.sortDropdown = page.locator('[data-test="sort"]');
-    this.productNames = page.locator('[data-test="product-name"]');
-    this.productPrices = page.locator('[data-test="product-price"]');
+    this.sortDropdown = page.getByTestId('sort');
+    this.productNames = page.getByTestId('product-name');
+    this.productPrices = page.getByTestId('product-price');
+
+    // first item
+    this.firstProductName = this.productNames.first();
+    this.firstProductPrice = this.productPrices.first();
   }
 
   async goto() {
     await this.page.goto('/');
   }
+
+  // read first product data 
+  async getFirstProductName(): Promise<string> {
+    await expect(this.firstProductName).toBeVisible();
+    return (await this.firstProductName.innerText()).trim();
+  }
+
+  // open PDP by clicking first product name
+  async openFirstProduct(): Promise<void> {
+    await expect(this.firstProductName).toBeVisible();
+    await this.firstProductName.click();
+  }
+
+  async getFirstProductPriceText(): Promise<string> {
+    const el = this.productPrices.first();
+    await expect(el).toBeVisible();
+    return (await el.innerText()).trim();
+  }
+
+  async openProductByName(name: string): Promise<void> {
+    const product = this.page.getByTestId('product-name').filter({ hasText: name }).first();
+    await expect(product).toBeVisible();
+    await product.click();
+  }
+
 
   async selectSortOption(option: string) {
     await this.sortDropdown.selectOption({ label: option });
@@ -33,31 +65,19 @@ export class HomePage {
     return await this.productNames.allTextContents();
   }
 
- async getProductPrices(): Promise<number[]> {
-  await expect(this.productPrices.first()).toBeVisible();
+  async getProductPrices(): Promise<number[]> {
+    const pricesText = await this.page.getByTestId('unit-price').allTextContents();
+    return pricesText.map(parsePrice);
+  }
 
-  const raw = await this.productPrices.allTextContents();
-
-  return raw
-    .map(parsePrice)
-    .filter(n => Number.isFinite(n));
-}
-
-  //  фільтрація категорії
   async filterByCategory(categoryLabel: string) {
     const checkbox = this.page.getByLabel(categoryLabel);
     await checkbox.check();
-
-    // мінімальний стабільний wait: список продуктів має бути видимий
     await expect(this.productNames.first()).toBeVisible();
   }
 
-  //  Перевірка що всі назви містять текст
   async expectAllProductNamesContain(text: string) {
-    // 1) перевірка, що фільтр реально застосувався
     await expect(this.productNames.filter({ hasText: text }).first()).toBeVisible();
-
-    // 2) всі елементи містять text
     const names = await this.productNames.allTextContents();
     for (const name of names) {
       expect(name).toContain(text);
