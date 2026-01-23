@@ -9,6 +9,7 @@ export class HomePage {
   readonly sortDropdown: Locator;
   readonly productNames: Locator;
   readonly productPrices: Locator;
+  readonly itemCardLocator: Locator;
 
   // first product helpers
   readonly firstProductName: Locator;
@@ -22,22 +23,51 @@ export class HomePage {
     this.productNames = page.getByTestId('product-name');
     this.productPrices = page.getByTestId('product-price');
 
+
+    this.itemCardLocator = page.locator('a.card');
+
     // first item
     this.firstProductName = this.productNames.first();
     this.firstProductPrice = this.productPrices.first();
   }
 
-  async goto() {
+
+  async goToHomePage(): Promise<void> {
     await this.page.goto('/');
   }
 
-  // read first product data 
+
+  async mockProducts(productAmount: number): Promise<void> {
+    await this.page.route('**/products*', async (route) => {
+      // робимо унікальні Mock продукти 
+      const products = Array.from({ length: productAmount }, (_, i) => ({
+        id: i + 1,
+        name: `Mock product ${i + 1}`,
+        price: 10 + i,
+      }));
+
+      await route.fulfill({
+        json: {
+          current_page: 1,
+          data: products,
+          from: 1,
+          to: productAmount,
+          per_page: productAmount,
+          total: productAmount,
+          last_page: 1,
+        },
+      });
+    });
+  }
+
+
+
+  // read first product data
   async getFirstProductName(): Promise<string> {
     await expect(this.firstProductName).toBeVisible();
     return (await this.firstProductName.innerText()).trim();
   }
 
-  // open PDP by clicking first product name
   async openFirstProduct(): Promise<void> {
     await expect(this.firstProductName).toBeVisible();
     await this.firstProductName.click();
@@ -54,7 +84,6 @@ export class HomePage {
     await expect(product).toBeVisible();
     await product.click();
   }
-
 
   async selectSortOption(option: string) {
     await this.sortDropdown.selectOption({ label: option });

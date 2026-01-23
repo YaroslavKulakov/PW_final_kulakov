@@ -1,10 +1,10 @@
-// Product.page.ts
 import { expect, type Locator, type Page } from '@playwright/test';
 
 export class ProductPage {
   readonly page: Page;
 
   readonly productName: Locator;
+  readonly productNames: Locator;
   readonly unitPrice: Locator;
   readonly addToCartButton: Locator;
   readonly addToFavoritesButton: Locator;
@@ -12,6 +12,7 @@ export class ProductPage {
   constructor(page: Page) {
     this.page = page;
 
+    this.productNames = page.getByTestId('product-name');
  
     this.productName = page.getByTestId('product-name');
     this.unitPrice = page.getByTestId('unit-price');
@@ -41,5 +42,8 @@ export class ProductPage {
   async expectButtonsVisible(): Promise<void> {
     await expect(this.addToCartButton).toBeVisible();
     await expect(this.addToFavoritesButton).toBeVisible();
+  }
+  async expectProductsCount(count: number): Promise<void> {
+  await expect(this.productNames).toHaveCount(count);
   }
 }

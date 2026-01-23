@@ -4,10 +4,12 @@ test('Verify user can view product details', async ({ app }) => {
   const productName = 'Combination Pliers';
   const expectedPrice = '14.15';
 
-  await app.homePage.goto();
+  await app.homePage.goToHomePage();
 
   // Open PDP from Home
   await app.homePage.openProductByName(productName);
+
+  await expect(app.productPage.page).toHaveURL(/product/);
 
   // assertions on ProductPage
   await app.productPage.expectOpened();
@@ -20,7 +22,7 @@ test('Verify user can add product to cart', async ({ app }) => {
   const productName = 'Slip Joint Pliers';
   const expectedPrice = '9.17';
 
-  await app.homePage.goto();
+  await app.homePage.goToHomePage();
 
   // Open PDP
   await app.homePage.openProductByName(productName);
