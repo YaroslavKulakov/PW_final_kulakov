@@ -1,7 +1,7 @@
 import { test as setup } from '@playwright/test';
 import { LoginPage } from '../Pages/Login.page';
 import { AccountPage } from '../Pages/Account.page';
-import { testUser } from '../tests/utils/testUser';
+import { USER } from '../config/baseConfig';
 
 const authFile = 'playwright/.auth/user.json';
 
@@ -11,10 +11,11 @@ setup('login via UI and save storage state', async ({ page }) => {
 
   await page.goto('/auth/login');
 
-  await loginPage.performLogin(testUser.email, testUser.password);
-  await accountPage.expectUserLoggedIn(testUser.fullName);
+  await loginPage.performLogin(USER.email, USER.password);
+  await accountPage.expectUserLoggedIn(USER.fullName);
 
   await page.context().storageState({ path: authFile });
 });
+
 
 
