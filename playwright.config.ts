@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { BASE_URL } from './config/baseConfig';
 
 const authFile = 'playwright/.auth/user.json';
 
@@ -11,7 +12,7 @@ export default defineConfig({
   reporter: 'html',
 
   use: {
-    baseURL: 'https://practicesoftwaretesting.com',
+    baseURL: BASE_URL,
     testIdAttribute: 'data-test',
     viewport: { width: 1440, height: 900 },
     trace: 'on-first-retry',
