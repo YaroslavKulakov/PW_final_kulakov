@@ -1,14 +1,13 @@
-import { test } from './fixtures';
+import { test, expect } from './fixtures';
 import { Categories } from './utils/categories';
 
-test.describe('Verify user can filter products by category', () => {
-  test('Verify user can filter products by category: Sander', async ({ app }) => {
-    await app.homePage.goto();
+test('Verify user can filter products by category: Sander', async ({ app }) => {
+  await app.homePage.goToHomePage();
 
-    const category = Categories.PowerTools.SANDER;
+  const category = Categories.PowerTools.SANDER;
+  await app.homePage.filterByCategory(category);
 
-    await app.homePage.filterByCategory(category);
+  await app.homePage.expectAllProductNamesContain(category);
 
-    await app.homePage.expectAllProductNamesContain(category);
-  });
+  await expect(app.homePage.productNames.first()).toBeVisible();
 });

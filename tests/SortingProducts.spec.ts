@@ -14,7 +14,7 @@ test.describe('Sorting products', () => {
 
     for (const { label, direction } of sortOptions) {
       test(`Verify user can sort products by ${label}`, async ({ app }) => {
-        await app.homePage.goto();
+        await app.homePage.goToHomePage();
         await app.homePage.selectSortOption(label);
 
         await expect
@@ -44,7 +44,7 @@ test.describe('Sorting products', () => {
 
     for (const { label, direction } of sortOptions) {
       test(`Verify user can sort products by ${label}`, async ({ app }) => {
-        await app.homePage.goto();
+        await app.homePage.goToHomePage();
         await app.homePage.selectSortOption(label);
 
         await expect
