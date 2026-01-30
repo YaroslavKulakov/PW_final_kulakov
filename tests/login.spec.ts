@@ -6,7 +6,7 @@ test.use({
   storageState: { cookies: [], origins: [] }, // затирає storageState з config
 });
 
-test('Verify login with valid credentials (UI)', async ({ page }) => {
+test('@smoke Verify login with valid credentials (UI)', async ({ page }) => {
   const app = new App(page);
 
   await page.goto('/auth/login');

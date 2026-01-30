@@ -1,7 +1,7 @@
 import { test, expect } from './fixtures';
 import { dummyPaymentCardData } from './utils/paymentData';
 
-test('Logged-in user can checkout with credit card', async ({ loggedInApp }) => {
+test('@smoke Logged-in user can checkout with credit card', async ({ loggedInApp }) => {
   await loggedInApp.homePage.goToHomePage();
 
   const name = await loggedInApp.homePage.getFirstProductName();

@@ -11,8 +11,6 @@ setup('login via UI and save storage state', async ({ page }) => {
 
   await page.goto('/auth/login');
 
-  await page.waitForURL(/\/auth\/login/);
-  await page.getByRole('heading', { name: /login/i }).waitFor({ state: 'visible' });
 
   await loginPage.performLogin(USER.email, USER.password);
   await accountPage.expectUserLoggedIn(USER.fullName);

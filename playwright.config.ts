@@ -16,7 +16,7 @@ export default defineConfig({
     testIdAttribute: 'data-test',
     viewport: { width: 1440, height: 900 },
     trace: 'on-first-retry',
-  video: 'retain-on-failure' 
+    video: 'retain-on-failure',
   },
 
   projects: [
@@ -26,6 +26,30 @@ export default defineConfig({
       testMatch: /.*\.setup\.ts/,
     },
 
+    // ✅ Smoke (Chromium only)
+    {
+      name: 'smoke',
+      grep: /@smoke/,
+      dependencies: ['setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: authFile,
+      },
+    },
+
+    // ✅ Regression (Chromium only)
+    {
+      name: 'regression',
+      grep: /@regression/,
+      dependencies: ['setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: authFile,
+      },
+    },
+
+    // ✅ Optional: keep full cross-browser suite (no tag filter)
+    // Run: npx playwright test --project=chromium|firefox|webkit
     {
       name: 'chromium',
       dependencies: ['setup'],
@@ -54,33 +78,3 @@ export default defineConfig({
     },
   ],
 });
-
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
-
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
-
