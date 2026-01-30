@@ -13,7 +13,7 @@ export class LoginPage {
     this.page = page;
     this.header = new HeaderFragment(page);
 
-    this.emailField = page.getByTestId('email');
+    this.emailField = page.getByLabel(/email/i);
     this.passwordField = page.getByTestId('password');
     this.submitButton = page.getByTestId('login-submit');
   }

@@ -1,6 +1,6 @@
 import { test, expect } from './fixtures';
 
-test('Verify user can view product details', async ({ app }) => {
+test('@regression Verify user can view product details', { tag: '@regression' }, async ({ app }) => {
   const productName = 'Combination Pliers';
   const expectedPrice = '14.15';
 
@@ -18,7 +18,7 @@ test('Verify user can view product details', async ({ app }) => {
   await app.productPage.expectButtonsVisible();
 });
 
-test('Verify user can add product to cart', async ({ app }) => {
+test('Verify user can add product to cart', { tag: '@regression' }, async ({ app }) => {
   const productName = 'Slip Joint Pliers';
   const expectedPrice = '9.17';
 

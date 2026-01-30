@@ -1,12 +1,12 @@
-name: Playwright Tests
+name: Smoke Tests
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
 jobs:
-  test:
-    timeout-minutes: 60
+  smoke:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     env:
       WEB_URL: ${{ vars.BASE_URL }}
@@ -22,8 +22,8 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test
+    - name: Run smoke tests
+      run: npx playwright test --grep @smoke
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:

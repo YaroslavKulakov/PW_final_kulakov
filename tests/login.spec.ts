@@ -1,17 +1,25 @@
-import { test, expect } from '@playwright/test';
-import { App } from '../Pages/App';
+import { test, expect } from './fixtures';
+import { USER } from '../config/baseConfig';
 
-test.use({
-  storageState: { cookies: [], origins: [] }, // затирає storageState з config
-});
+test(
+  'Verify login with valid credentials (UI)',
+  { tag: '@regression' },
+  async ({ page, app }) => {
 
-test('Verify login with valid credentials (UI)', async ({ page }) => {
-  const app = new App(page);
+    // 🚫 Skip in CI because Cloudflare blocks UI login
+    test.skip(!!process.env.CI, 'Skipped in CI due to Cloudflare');
 
-  await page.goto('/auth/login');
+    await page.goto('/auth/login');
 
-  await app.loginPage.performLogin('customer@practicesoftwaretesting.com', 'welcome01');
-  await app.accountPage.expectUserLoggedIn('Jane Doe');
+    await app.loginPage.performLogin(USER.email, USER.password);
 
-  await expect(page.getByText('Jane Doe')).toBeVisible();
-});
+    // ✅ basic sanity checks (local only)
+    await expect(page).toHaveURL(/\/account/);
+
+    // optional UI checks (only local)
+    await expect(page.getByTestId('nav-menu')).toBeVisible();
+
+    // якщо реально показується імʼя
+    await expect(page.getByTestId('nav-menu')).toContainText(USER.fullName);
+  }
+);
