@@ -1,55 +1,96 @@
 import { defineConfig, devices } from '@playwright/test';
 import { BASE_URL } from './config/baseConfig';
 
-const authFile = 'playwright/.auth/user.json';
+/**
+ * Read environment variables from file.
+ * https://github.com/motdotla/dotenv
+ */
+// import dotenv from 'dotenv';
+// import path from 'path';
+// dotenv.config({ path: path.resolve(__dirname, '.env') });
 
+/**
+ * See https://playwright.dev/docs/test-configuration.
+ */
 export default defineConfig({
   testDir: './tests',
-
-  forbidOnly: !!process.env.CI,
+  /* Run tests in files in parallel */
   fullyParallel: true,
+  /* Fail the build on CI if you accidentally left test.only in the source code. */
+  forbidOnly: !!process.env.CI,
+  /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
+  /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
-
+  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
-    ['dot'],
-    ['html', { open: 'never' }],
+  ['dot'],
+  ['html', { open: 'never' }],
+  ['json', { outputFile: 'test-results.json' }],
+  [
+    '@testomatio/reporter/playwright',
+    {
+      apiKey: process.env.TESTOMATIO,
+    },
+    
   ],
-
+],
+  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
+    /* Base URL to use in actions like `await page.goto('')`. */
     baseURL: BASE_URL,
+
     testIdAttribute: 'data-test',
-    ...devices['Desktop Chrome'],
+    
+    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
+    // Capture screenshot after each test failure.
     screenshot: 'only-on-failure',
-    video: 'on-first-retry',
+
+    // Record video only when retrying a test for the first time.
+    video: 'on-first-retry'
   },
 
+  /* Configure projects for major browsers */
   projects: [
-    // 1️⃣ setup
-    {
-      name: 'setup',
-      testMatch: /.*\.setup\.ts/,
-    },
+    
+    { name: 'auth', testMatch: /.*\.auth\.login\.spec\.ts/ },
 
-    // 2️⃣ smoke project
     {
       name: 'smoke',
       grep: /@smoke/,
-      dependencies: ['setup'],
       use: {
-        storageState: authFile,
+        ...devices['Desktop Chrome'],
       },
     },
 
-    // 3️⃣ regression project
     {
       name: 'regression',
       grep: /@regression/,
-      dependencies: ['setup'],
       use: {
-        storageState: authFile,
+        ...devices['Desktop Chrome'],
       },
     },
+
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+      dependencies: ['auth'],
+    },
+
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+      dependencies: ['auth'],
+    },
+
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+      dependencies: ['auth'],
+    },
+
   ],
+
 });

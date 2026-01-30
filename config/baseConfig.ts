@@ -3,15 +3,8 @@ import { join } from 'path';
 
 dotenvConfig({ path: join(process.cwd(), '.env') });
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`❌ Missing env variable: ${name}`);
-  }
-  return value;
-}
-
-export const BASE_URL = requireEnv('BASE_URL');
+export const BASE_URL =
+  process.env.BASE_URL ?? 'https://practicesoftwaretesting.com';
 
 export const USER = {
   email: process.env.USER_EMAIL ?? 'customer@practicesoftwaretesting.com',
