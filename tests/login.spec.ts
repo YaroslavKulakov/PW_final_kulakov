@@ -1,16 +1,25 @@
 import { test, expect } from './fixtures';
 import { USER } from '../config/baseConfig';
 
-test('Verify login with valid credentials (UI) @regression', async ({ page, app }) => {
-  await page.goto('/auth/login');
+test(
+  'Verify login with valid credentials (UI)',
+  { tag: '@regression' },
+  async ({ page, app }) => {
 
-  await app.loginPage.performLogin(USER.email, USER.password);
+    // 🚫 Skip in CI because Cloudflare blocks UI login
+    test.skip(!!process.env.CI, 'Skipped in CI due to Cloudflare');
 
-  // ✅ stable checks (CI-friendly)
-  await expect(page).toHaveURL(/\/account/);
-  await expect(page.getByTestId('page-title')).toHaveText(/my account/i);
+    await page.goto('/auth/login');
 
-  // ✅ optional: if name is really shown in nav menu
-  await expect(page.getByTestId('nav-menu')).toBeVisible();
-  // await expect(page.getByTestId('nav-menu')).toContainText(USER.fullName, { timeout: 15000 });
-});
+    await app.loginPage.performLogin(USER.email, USER.password);
+
+    // ✅ basic sanity checks (local only)
+    await expect(page).toHaveURL(/\/account/);
+
+    // optional UI checks (only local)
+    await expect(page.getByTestId('nav-menu')).toBeVisible();
+
+    // якщо реально показується імʼя
+    await expect(page.getByTestId('nav-menu')).toContainText(USER.fullName);
+  }
+);
