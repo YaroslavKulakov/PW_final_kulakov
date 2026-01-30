@@ -6,13 +6,12 @@ test.use({
   storageState: { cookies: [], origins: [] }, // затирає storageState з config
 });
 
-test('@smoke Verify login with valid credentials (UI)', async ({ page }) => {
+test('Verify login with valid credentials (UI)', { tag: '@regression' }, async ({ page }) => {
   const app = new App(page);
 
   await page.goto('/auth/login');
 
   await app.loginPage.performLogin(USER.email, USER.password);
-  await app.accountPage.expectUserLoggedIn(USER.fullName);
 
   await expect(page.getByText(USER.fullName)).toBeVisible();
 });

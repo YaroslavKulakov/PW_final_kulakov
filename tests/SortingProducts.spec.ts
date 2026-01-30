@@ -5,7 +5,7 @@ import {
   type SortDirection,
 } from './utils/sort';
 
-test.describe('@regression Sorting products', () => {
+test.describe('Sorting products', { tag: '@sregression' }, () => {
   test.describe('Verify user can perform sorting by name (asc & desc)', () => {
     const sortOptions: ReadonlyArray<{ label: string; direction: SortDirection }> = [
       { label: 'Name (A - Z)', direction: 'asc' },

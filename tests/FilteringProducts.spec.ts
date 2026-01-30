@@ -1,7 +1,7 @@
 import { test, expect } from './fixtures';
 import { Categories } from './utils/categories';
 
-test('@regression Verify user can filter products by category: Sander', async ({ app }) => {
+test('Verify user can filter products by category: Sander', { tag: '@regression' }, async ({ app }) => {
   await app.homePage.goToHomePage();
 
   const category = Categories.PowerTools.SANDER;

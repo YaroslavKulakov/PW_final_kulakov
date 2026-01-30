@@ -9,24 +9,32 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+
+
+  reporter: [
+    ['dot'],
+    ['html', { open: 'never' }],
+    ['json', { outputFile: 'test-results.json' }],
+  ],
 
   use: {
     baseURL: BASE_URL,
     testIdAttribute: 'data-test',
     viewport: { width: 1440, height: 900 },
     trace: 'on-first-retry',
-    video: 'retain-on-failure',
+    screenshot: 'only-on-failure',
+    video: 'on-first-retry',
   },
 
   projects: [
-    // ✅ Setup project: runs first and saves storageState to authFile
+    // Setup: створює storageState
     {
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
     },
 
-    // ✅ Smoke (Chromium only)
+    // Tagged suites (Chromium only)
+    // Запуск: npx playwright test --project=smoke
     {
       name: 'smoke',
       grep: /@smoke/,
@@ -37,7 +45,7 @@ export default defineConfig({
       },
     },
 
-    // ✅ Regression (Chromium only)
+    // Запуск: npx playwright test --project=regression
     {
       name: 'regression',
       grep: /@regression/,
@@ -48,8 +56,9 @@ export default defineConfig({
       },
     },
 
-    // ✅ Optional: keep full cross-browser suite (no tag filter)
-    // Run: npx playwright test --project=chromium|firefox|webkit
+    // Cross-browser suite (без тегів)
+    // Запуск: npx playwright test --project=chromium (або firefox/webkit)
+ 
     {
       name: 'chromium',
       dependencies: ['setup'],
@@ -58,7 +67,6 @@ export default defineConfig({
         storageState: authFile,
       },
     },
-
     {
       name: 'firefox',
       dependencies: ['setup'],
@@ -67,7 +75,6 @@ export default defineConfig({
         storageState: authFile,
       },
     },
-
     {
       name: 'webkit',
       dependencies: ['setup'],
