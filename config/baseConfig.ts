@@ -14,7 +14,7 @@ function requireEnv(name: string): string {
 export const BASE_URL = requireEnv('BASE_URL');
 
 export const USER = {
-  email: requireEnv('USER_EMAIL'),
-  password: requireEnv('USER_PASSWORD'),
-  fullName: requireEnv('USER_NAME'),
+  email: process.env.USER_EMAIL ?? 'customer@practicesoftwaretesting.com',
+  password: process.env.USER_PASSWORD!,
+  fullName: process.env.USER_NAME ?? 'Jane Doe',
 };

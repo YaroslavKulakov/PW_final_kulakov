@@ -1,4 +1,4 @@
-import { test as setup } from '@playwright/test';
+import { test as setup} from '@playwright/test';
 import { LoginPage } from '../Pages/Login.page';
 import { AccountPage } from '../Pages/Account.page';
 import { USER } from '../config/baseConfig';
@@ -10,6 +10,9 @@ setup('login via UI and save storage state', async ({ page }) => {
   const accountPage = new AccountPage(page);
 
   await page.goto('/auth/login');
+
+  await page.waitForURL(/\/auth\/login/);
+  await page.getByRole('heading', { name: /login/i }).waitFor({ state: 'visible' });
 
   await loginPage.performLogin(USER.email, USER.password);
   await accountPage.expectUserLoggedIn(USER.fullName);
