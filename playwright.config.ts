@@ -1,14 +1,14 @@
 import { defineConfig, devices } from '@playwright/test';
 import { BASE_URL } from './config/baseConfig';
 
+const authFile = 'playwright/.auth/user.json';
+
 export default defineConfig({
   testDir: './tests',
-
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-
 
   use: {
     baseURL: BASE_URL,
@@ -19,53 +19,48 @@ export default defineConfig({
   },
 
   projects: [
-    // 🔹 auth / setup (якщо реально використовуєш)
     {
-      name: 'auth',
-      testMatch: /.*\.auth\.login\.spec\.ts/,
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
     },
 
-    // 🔹 smoke
     {
       name: 'smoke',
       grep: /@smoke/,
+      dependencies: ['setup'],
       use: {
         ...devices['Desktop Chrome'],
+        storageState: authFile,
       },
     },
 
-    // 🔹 regression
     {
       name: 'regression',
       grep: /@regression/,
+      dependencies: ['setup'],
       use: {
         ...devices['Desktop Chrome'],
+        storageState: authFile,
       },
     },
 
-    // 🔹 full cross-browser (опційно)
     {
       name: 'chromium',
-      dependencies: ['auth'],
+      dependencies: ['setup'],
       use: {
         ...devices['Desktop Chrome'],
+        storageState: authFile,
       },
     },
 
-    {
-      name: 'firefox',
-      dependencies: ['auth'],
-      use: {
-        ...devices['Desktop Firefox'],
-      },
-    },
+   // {
+   //  name: 'firefox',
+   //   dependencies: ['setup'],
+   //   use: {
+   //     ...devices['Desktop Firefox'],
+   //     storageState: authFile,
+   //   },
+   // },
 
-    {
-      name: 'webkit',
-      dependencies: ['auth'],
-      use: {
-        ...devices['Desktop Safari'],
-      },
-    },
   ],
 });
